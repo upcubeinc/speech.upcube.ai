@@ -3,24 +3,30 @@ services:
   coqui-tts:
     build: .
     ports:
-      - "5005:5002"                 # host:container
-    entrypoint:
+      - "5005:5002"                    # host:container
+    # Run uvicorn programmatically and avoid local-module shadowing
+    command:
       - python3
       - -c
       - |
-        import os, uvicorn
+        import os, sys
+        # ensure site-packages uvicorn is imported (not a local ./uvicorn)
+        if sys.path and sys.path[0] in ("", "."):
+            sys.path.pop(0)
         from TTS.server.server import app
+        import uvicorn
         uvicorn.run(app,
                     host="0.0.0.0",
                     port=int(os.environ.get("PORT", "5002")),
                     log_level="info")
+    environment:
+      - PORT=5002
     healthcheck:
       test: ["CMD","curl","-f","http://localhost:5002/docs"]
       interval: 10s
       timeout: 3s
       retries: 10
-    environment:
-      - PORT=5002
+
 
 
 
