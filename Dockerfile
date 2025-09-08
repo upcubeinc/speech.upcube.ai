@@ -8,27 +8,26 @@ RUN apt-get update && apt-get upgrade -y && \
     espeak-ng libsndfile1-dev curl && \
     rm -rf /var/lib/apt/lists/*
 
-# Python deps
-RUN pip3 install llvmlite --ignore-installed
-RUN pip3 install torch torchaudio --extra-index-url https://download.pytorch.org/whl/cu118
-RUN rm -rf /root/.cache/pip
+# Python dependencies
+RUN pip3 install --no-cache-dir llvmlite torch torchaudio \
+    --extra-index-url https://download.pytorch.org/whl/cu118 && \
+    rm -rf /root/.cache/pip
 
 # Copy repo contents
 WORKDIR /root
 COPY . /root
 
-# Install TTS package
+# Install TTS itself
 RUN make install
 
-# Install server runtime (FastAPI + Uvicorn)
-RUN python3 -m pip install --no-cache-dir "uvicorn[standard]==0.30.*" "fastapi>=0.110"
+# Install FastAPI + Uvicorn runtime
+RUN pip3 install --no-cache-dir "uvicorn[standard]==0.30.*" "fastapi>=0.110"
 
 # Expose API port
 EXPOSE 5002
-ENV PYTHONUNBUFFERED=1
 
-# Run TTS HTTP server (FastAPI app inside Coqui TTS)
-ENTRYPOINT ["python3","-m","uvicorn","TTS.server.server:app"]
-CMD ["--host","0.0.0.0","--port","5002","--log-level","info"]
+# Run the HTTP server
+CMD ["python3", "-m", "uvicorn", "TTS.server.server:app", "--host", "0.0.0.0", "--port", "5002"]
+
 
 
