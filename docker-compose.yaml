@@ -1,19 +1,20 @@
 version: "3.9"
 services:
   coqui-tts:
-    build: .
-    container_name: coqui-tts
-    ports:
-      - "5002:5002"
+    build:
+      context: .
+    # no container_name in Coolify (avoids name collisions)
     environment:
       - PYTHONPATH=/root
-    # run uvicorn directly (prevents python -m resolution collisions)
     command: ["uvicorn", "TTS.server.server:app", "--host", "0.0.0.0", "--port", "5002", "--log-level", "info"]
+    ports:
+      - "5005:5002"  # <- change host port here
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5002/docs"]
+      test: ["CMD-SHELL", "curl -fsS http://localhost:5002/docs >/dev/null || exit 1"]
       interval: 10s
       timeout: 3s
       retries: 10
     restart: unless-stopped
+
 
 
