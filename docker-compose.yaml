@@ -3,8 +3,7 @@ services:
   coqui-tts:
     build: .
     ports:
-      - "5005:5002"   # Coolify maps 5005 on host -> 5002 in container
-    # Run uvicorn programmatically to avoid the CLI arg conflict
+      - "5005:5002"                 # host:container
     entrypoint:
       - python3
       - -c
@@ -22,6 +21,7 @@ services:
       retries: 10
     environment:
       - PORT=5002
+
 
 
 
