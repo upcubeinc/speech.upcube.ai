@@ -26,6 +26,6 @@ RUN python3 -m pip install --no-cache-dir "uvicorn[standard]==0.30.*" "fastapi>=
 # Expose API port
 EXPOSE 5002
 
-# Run TTS HTTP server
-CMD ["python3", "-m", "uvicorn", "TTS.server.server:app", "--port", "5002", "--log-level", "info"]
+# Run TTS HTTP server (bind to all interfaces for Docker)
+CMD ["python3","-m","uvicorn","TTS.server.server:app","--host","0.0.0.0","--port","5002","--log-level","info"]
 
