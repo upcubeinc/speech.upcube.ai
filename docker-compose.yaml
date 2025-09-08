@@ -6,13 +6,10 @@ services:
     restart: unless-stopped
     ports:
       - "5002:5002"
-    entrypoint: ["/bin/bash", "-lc"]
-    command: |
-      python3 -m pip install --no-cache-dir "uvicorn[standard]==0.30.*" "fastapi>=0.110" && \
-      python3 -m uvicorn TTS.server.server:app --host 0.0.0.0 --port 5002 --log-level info
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5002/docs"]
       interval: 30s
       timeout: 10s
       retries: 5
+
 
