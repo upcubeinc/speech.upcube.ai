@@ -2,14 +2,14 @@ version: "3.9"
 services:
   coqui-tts:
     build: .
-    container_name: coqui-tts
-    restart: unless-stopped
     ports:
       - "5002:5002"
+    # run uvicorn directly (this overrides the image ENTRYPOINT)
+    entrypoint: ["python3","-m","uvicorn","TTS.server.server:app"]
+    command: ["--host","0.0.0.0","--port","5002","--log-level","info"]
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5002/docs"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
+      test: ["CMD","curl","-f","http://localhost:5002/docs"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
 
