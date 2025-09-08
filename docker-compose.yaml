@@ -1,0 +1,14 @@
+services:
+  coqui-tts:
+    build: .
+    container_name: coqui-tts
+    restart: unless-stopped
+    ports:
+      - "5002:5002"
+    entrypoint: ["python3"]
+    command: ["-m","uvicorn","TTS.server.server:app","--host","0.0.0.0","--port","5002"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5002/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
